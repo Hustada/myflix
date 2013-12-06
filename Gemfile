@@ -2,7 +2,10 @@ source 'https://rubygems.org'
 
 gem 'rails', '3.2.11'
 gem 'haml-rails'
-gem 'bootstrap-sass'
+gem 'jquery-rails'
+gem 'bootstrap-sass','~>2.2.1.0'
+gem 'bootstrap_form' 
+gem 'bcrypt-ruby','3.0.0'
 
 group :assets do
   gem 'sass-rails',   '~> 3.2.3'
@@ -20,7 +23,7 @@ group :production do
   gem 'pg'
 end
 
-gem 'jquery-rails'
+
 
 group :test, :development do
   gem "rspec-rails", "~> 2.0"
