@@ -36,11 +36,13 @@ end
 
 group :test do
   gem 'shoulda-matchers'
-  gem 'capybara'
-  gem 'capybara-email'
-  gem 'launchy'
+  gem 'capybara', '2.1.0'
+  gem 'capybara-email', '2.1.2'
   gem 'vcr'
+  gem 'launchy'
   gem 'webmock', '1.11.0'
+  gem 'selenium-webdriver'
+  gem 'database_cleaner'
 end
 
 group :production do
