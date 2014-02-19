@@ -1,5 +1,5 @@
     class UsersController < ApplicationController
-      before_action :require_user, except: [:new, :create]
+      before_action :require_user, only: [:show]
       
 
       def new
@@ -8,18 +8,13 @@
 
       def create
         @user = User.new(users_params)
-        if @user.save
-          handle_invitation
-          Stripe.api_key = ENV['STRIPE_SECRET_KEY']
-          Stripe::Charge.create(
-            :amount => 999,
-            :currency => "usd",
-            :card => params[:stripeToken],
-            :description => "Sign Up Charge for #{@user.email}"
-          )
-          AppMailer.delay.send_welcome_email(@user)
+        result = UserSignup.new(@user).sign_up(params[:stripeToken], params[:invitation_token])
+      
+      if result.successful?    
+          flash[:success] = "Thanks for registering with Myflix. Please sign in now."
           redirect_to sign_in_path
         else
+          flash[:error] = result.error_message
           render :new
         end
       end
@@ -49,13 +44,6 @@
       params.require(:user).permit(:email, :password, :full_name)
     end
 
-    def handle_invitation
-        if params[:invitation_token].present?
-            invitation = Invitation.where(token: params[:invitation_token]).first
-            @user.follow(invitation.inviter)
-            invitation.inviter.follow(@user)
-            invitation.update_column(:token, nil)
-        end
-      end
+    
     end
 
