@@ -1,7 +1,6 @@
     class UsersController < ApplicationController
       before_action :require_user, only: [:show]
-      
-      
+
 
       def new
         @user = User.new
@@ -9,6 +8,15 @@
 
       def create
         @user = User.new(users_params)
+
+        result = UserSignup.new(@user).sign_up(params[:stripeToken], params[:invitation_token])
+      
+      if result.successful?    
+          flash[:success] = "Thanks for registering with Myflix. Please sign in now."
+          redirect_to sign_in_path
+        else
+          flash[:error] = result.error_message
+
         if @user.valid?
           charge = StripeWrapper::Charge.create(
             :amount => 999,
@@ -56,13 +64,6 @@
       params.require(:user).permit(:email, :password, :full_name)
     end
 
-    def handle_invitation
-        if params[:invitation_token].present?
-            invitation = Invitation.where(token: params[:invitation_token]).first
-            @user.follow(invitation.inviter)
-            invitation.inviter.follow(@user)
-            invitation.update_column(:token, nil)
-        end
-      end
+    
     end
 

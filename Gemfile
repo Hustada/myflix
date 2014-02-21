@@ -18,6 +18,7 @@ gem 'fog'
 gem 'mini_magick'
 gem 'stripe'
 gem 'figaro'
+gem 'draper'
 
 
 
@@ -37,7 +38,8 @@ end
 group :test do
   gem 'shoulda-matchers'
   gem 'capybara', '2.1.0'
-  gem 'capybara-email', '2.1.2'
+  gem 'launchy'
+
   gem 'vcr'
   gem 'launchy'
   gem 'webmock', '1.11.0'
@@ -52,3 +54,6 @@ group :production do
 end
 
   gem 'jquery-rails'
+
+
+##

@@ -10,6 +10,10 @@
   end
 
   describe "POST create" do
+
+    context "successful user sign up" do
+      
+
     context "valid personal info and valid card" do
         let(:charge) { double(:charge, successful?: true) }
 
@@ -27,35 +31,32 @@
 
 
       it "redirects to the sign in page" do
+
+        result = double(:sign_up_result, successful?: true)
+        UserSignup.any_instance.should_receive(:sign_up).and_return(result)
         post :create, user: Fabricate.attributes_for(:user)
         expect(response).to redirect_to sign_in_path
       end
+    end
 
-      it "makes the user follow the inviter" do
-        mark = Fabricate(:user)
-        invitation = Fabricate(:invitation, inviter: mark, recipient_email: 'joe@example.com')
-        post :create, user: {email: 'joe@example.com', password: "password", full_name: 'Joe Doe'}, invitation_token: invitation.token
-        joe = User.where(email: 'joe@example.com').first
-        expect(joe.follows?(mark)).to be_true
-      end
-    
-      
 
-      it "makes the inviter follow the user" do
-        mark = Fabricate(:user)
-        invitation = Fabricate(:invitation, inviter: mark, recipient_email: 'joe@example.com')
-        post :create, user: {email: 'joe@example.com', password: "password", full_name: 'Joe Doe'}, invitation_token: invitation.token
-        joe = User.where(email: 'joe@example.com').first
-        expect(mark.follows?(joe)).to be_true
+    context "failed user sign_up" do
+      it "render the :new template" do
+        result = double(:sign_up_result, successful?: false, error_message: "This is an error message")
+        UserSignup.any_instance.should_receive(:sign_up).and_return(result)
+        post :create, user: Fabricate.attributes_for(:user), stripeToken: '1231241'
+        expect(response).to render_template :new
       end
-      
-      it "expires the invitation upon acceptance" do
-        mark = Fabricate(:user)
-        invitation = Fabricate(:invitation, inviter: mark, recipient_email: 'joe@example.com')
-        post :create, user: {email: 'joe@example.com', password: "password", full_name: 'Joe Doe'}, invitation_token: invitation.token
-        expect(Invitation.first.token).to be_nil
+
+      it "sets the flash error message" do
+        result = double(:sign_up_result, successful?: false, error_message: "This is an error message")
+        UserSignup.any_instance.should_receive(:sign_up).and_return(result)
+        post :create, user: Fabricate.attributes_for(:user), stripeToken: '1231241'
+        expect(flash[:error]).to eq("This is an error message")
       end
     end
+
+      
 
     context "valid personal info and declined card" do
       it "does not create a new user record" do
@@ -130,9 +131,8 @@
         expect(ActionMailer::Base.deliveries.last.body).to include('Mark Hustad')
       end
      
-      
+
     end
-  end
     
 
     describe "GET show" do
