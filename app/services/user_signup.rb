@@ -1,5 +1,4 @@
 class UserSignup
-
   attr_reader :error_message
 
 
@@ -42,7 +41,7 @@ class UserSignup
   private
       
   def handle_invitation(invitation_token)
-          if params[:invitation_token].present?
+          if invitation_token.present?
               invitation = Invitation.where(token: invitation_token).first
               @user.follow(invitation.inviter)
               invitation.inviter.follow(@user)

@@ -6,3 +6,10 @@ class VideoDecorator < Draper::Decorator
   end
 
 end
+
+
+
+
+##for view template
+
+         ## = @video.rating
