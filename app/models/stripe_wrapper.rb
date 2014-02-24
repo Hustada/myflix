@@ -25,27 +25,40 @@
     def successful?
       response.present
     end
+
+    def error_message
+      @error_message
+    end
   end
 
   class Customer
-    attr_reader :response
+    attr_reader :response, :error_message
 
-    def intialize(options={})
+    def initialize(options={})
       @response = options[:response]
+      @error_message = options[:error_message]
     end
 
     def self.create(options={})
-      response = Stripe::Customer.create(
-        card: options[:card],
-        email: options[:user].email,
-        plan: "base"
-        )
+      begin
+        response = Stripe::Customer.create(
+          card: options[:card],
+          email: options[:user].email,
+          plan: "plan_id"
+          )
 
-      new(response: response)
+        new(response: response)
+      rescue Stripe::CardError => e
+        new(error_message: e.message)
     end
+  end 
 
     def successful?
       response.present?
+    end 
+    
+    def customer_token
+      response.id
     end
   end
 end 
