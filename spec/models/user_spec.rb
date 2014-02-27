@@ -62,7 +62,17 @@
         expect(mark.follows?(mark)).to be_false
       end
     end
-  end
+
+
+      describe "deactivate!" do
+        it "deactivates a user" do
+          mark = Fabricate(:user, active: true)
+          mark.deactivate!
+          expect(mark).not_to be_active
+      end
+    end
+  end 
+
 
 
 

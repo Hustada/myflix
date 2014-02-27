@@ -14,6 +14,7 @@ end
 
   namespace :admin do
     resources :videos, only: [:new, :create]
+    resources :payments, only: [:index]
   end
 
   resources :users, only: [:show]
@@ -42,5 +43,7 @@ end
   get 'expired_token', to: 'pages#expired_token' 
 
   resources :invitations, only: [:new, :create]
+
+  mount StripeEvent::Engine => '/stripe_events'
 end
 
